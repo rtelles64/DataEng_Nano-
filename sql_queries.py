@@ -9,6 +9,10 @@ time_table_drop = "DROP TABLE time;"
 # CREATE TABLES
 
 songplay_table_create = ("""
+    CREATE TABLE IF NOT EXISTS songplays
+        (songplay_id int, start_time int, user_id int, level varchar,
+         song_id int, artist_id int, session_id int, location text,
+         user_agent text)
 """)
 
 user_table_create = ("""
