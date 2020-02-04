@@ -23,12 +23,12 @@ user_table_create = ("""
 
 song_table_create = ("""
     CREATE TABLE IF NOT EXISTS songs
-        (song_id text, title text, artist_id text, year int, duration numeric);
+        (song_id text, title text, artist_id text, year int, duration float);
 """)
 
 artist_table_create = ("""
     CREATE TABLE IF NOT EXISTS artists
-        (artist_id int, name varchar, location text, latitude numeric,
+        (artist_id text, name varchar, location text, latitude numeric,
          longitude numeric);
 """)
 
