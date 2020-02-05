@@ -17,7 +17,7 @@ songplay_table_create = ("""
 
 user_table_create = ("""
     CREATE TABLE IF NOT EXISTS users
-        (user_id int, first_name varchar, last_name varchar, gender char,
+        (user_id varchar, first_name varchar, last_name varchar, gender char,
          level varchar);
 """)
 
