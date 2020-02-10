@@ -1,0 +1,10 @@
+cassandra-driver==3.21.0
+certifi==2019.11.28
+Click==7.0
+geomet==0.1.2
+numpy==1.18.1
+pandas==1.0.0
+psycopg2==2.8.4
+python-dateutil==2.8.1
+pytz==2019.3
+six==1.14.0
