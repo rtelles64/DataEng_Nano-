@@ -1,1 +1,185 @@
-# data_modeling
+# Data Modeling
+
+## Intro
+
+A startup called _Sparkify_ wants to analyze the data they've been collecting on songs and user activity on their new music streaming app. The analytics team is particularly interested in understanding what songs users are listening to. Currently, they don't have an easy way to query their data, which resides in a directory of JSON logs on user activity on the app, as well as a directory with JSON metadata on the songs in their app.
+
+They'd like a data engineer to create a Postgres database with tables designed to optimize queries on song play analysis. The purpose of this project is to create a database schema and ETL pipeline for this analysis.
+
+## Project Description
+
+In this project, I apply data modeling with Postgres and build an ETL pipeline using Python. Defining fact and dimension tables for a star schema for a particular analytic focus, I write an ETL pipeline that transfers data from files in two local directories into these tables in Postgres using Python and SQL.
+
+## Getting Started
+
+My operating system is a Mac so the installation instructions reflect this system. The code editor used was Atom. Most of the files and configurations were provided by Udacity.
+
+### Installing Git
+
+Git is already installed on MacOS, but these instructions are to ensure we have the latest version:
+
+1. go to [https://git-scm.com/downloads](https://git-scm.com/downloads)
+2. download the software for Mac
+3. install Git choosing all the default options
+
+Once everything is installed, you should be able to run `git` on the command line. If usage information is displayed, we're good to go!
+
+### Configuring Mac's Terminal (OPTIONAL)
+
+Git can be used without reconfiguring the terminal but doing so makes it easier to use.
+
+To configure the terminal, perform the following:
+
+1. download [udacity-terminal-config.zip](http://video.udacity-data.com.s3.amazonaws.com/topher/2017/March/58d31ce3_ud123-udacity-terminal-config/ud123-udacity-terminal-config.zip)
+2. Move the `udacity-terminal-config` directory to the directory of your choice and name it `.udacity-terminal-config`(Note the dot in front)
+3. Move the `bash-profile` to the same directory as in `step 2` and name it `.bash_profile`(Note the dot in front)
+    * If you already have a `.bash_profile` file in your directory, transfer the content from the downloaded `bash_profile` to the existing `.bash_profile`
+
+**Note:** It's considerably easier to just use
+`mv bash_profile .bash_profile`
+and `mv udacity-terminal-config .udacity-terminal-config`
+when moving and renaming these files in order to avoid mac system errors
+
+### First Time Git Configuration
+Run each of the following lines on the command line to make sure everything is set up.
+```
+# sets up Git with your name
+git config --global user.name "<Your-Full-Name>"
+
+# sets up Git with your email
+git config --global user.email "<your-email-address>"
+
+# makes sure that Git output is colored
+git config --global color.ui auto
+
+# displays the original state in a conflict
+git config --global merge.conflictstyle diff3
+
+git config --list
+```
+
+### Git & Code Editor
+
+The last step of configuration is to get Git working with your code editor. Below is the configuration for Atom. If you use a different editor, then do a quick search on Google for "associate X text editor with Git" (replace the X with the name of your code editor).
+```
+git config --global core.editor "atom --wait"
+```
+
+### Install Postgres
+
+This [link](https://www.codementor.io/engineerapart/getting-started-with-postgresql-on-mac-osx-are8jcopb) provides directions to install Postgres for MacOS. It goes through configuring Postgres, creating users, and creating databases using the psql utility. It will help further explain the Python driver.
+
+Here is a short tutorial on `psycopg2`. This [link](https://pynative.com/python-postgresql-tutorial/) gives a good starter tutorial.
+
+### requirements.txt
+
+Refer to [requirements.txt](https://github.com/rtelles64/data_modeling/blob/master/requirements.txt) for project/environment packages.
+
+## The data
+### Song Dataset
+The first dataset is a subset of real data from the [Million Song Dataset](https://labrosa.ee.columbia.edu/millionsong/). Each file is in JSON format and contains metadata about a song and the artist of that song. The files are partitioned by the first three letters of each song's track ID. For example, here are filepaths to two files in this dataset.
+
+```
+song_data/A/B/C/TRABCEI128F424C983.json
+song_data/A/A/B/TRAABJL12903CDCF1A.json
+```
+
+And below is an example of what a single song file, TRAABJL12903CDCF1A.json, looks like.
+
+```
+{"num_songs": 1, "artist_id": "ARJIE2Y1187B994AB7", "artist_latitude": null, "artist_longitude": null, "artist_location": "", "artist_name": "Line Renaud", "song_id": "SOUPIRU12A6D4FA1E1", "title": "Der Kleine Dompfaff", "duration": 152.92036, "year": 0}
+```
+
+### Log Dataset
+The second dataset consists of log files in JSON format generated by this [event simulator](https://github.com/Interana/eventsim) based on the songs in the dataset above. These simulate activity logs from a music streaming app based on specified configurations.
+
+The log files in the dataset are partitioned by year and month. For example, here are filepaths to two files in this dataset.
+
+```
+log_data/2018/11/2018-11-12-events.json
+log_data/2018/11/2018-11-13-events.json
+```
+
+If you would like to look at the JSON data within log_data files, you will need to create a pandas dataframe to read the data. Remember to first import JSON and pandas libraries.
+
+For example `df = pd.read_json('data/log_data/2018/11/2018-11-01-events.json', lines=True)` would read the data file 2018-11-01-events.json.
+
+## Schema for Song Play Analysis
+
+Using the song and log datasets, this star schema is optimized for queries on song play analysis.
+
+### Fact Table
+
+- **songplays** - records in log data associated with song plays (i.e. records with page `NextSong`)
+    - _songplay_id_, _start_time_, _user_id_, _level_, _song_id_, _artist_id_, _session_id_, _location_, _user_agent_
+
+### Dimension Tables
+
+- **users** - users in the app
+    - _user_id_, _first_name_, _last_name_, _gender_, _level_
+- **songs** - songs in music database
+    - _song_id_, _title_, _artist_id_, _year_, _duration_
+- **arists** - artists in music database
+    - _artist_id_, _name_, _location_, _latitude_, _longitude_
+- **time** - timestamps of records in **songplays** broken down into specific units
+    - _start_time_, _hour_, _day_, _week_, _month_, _year_, _weekday_
+
+## Project Files
+
+- `create_tables.py` - drops and creates tables.
+> Run this file to reset tables before running etl scripts
+
+- `etl.py` - reads and processes files from `song_data` and `log_data` and loads them into the tables
+
+- `sql_queries.py` - contains all sql queries and is imported into the files above
+
+## Version
+
+This project uses `Python 3`
+
+## Run etl.py
+
+1. First run `create_tables.py` to set up the database and tables.
+> No output will be generated
+
+2. Run `etl.py` to load data from song and log files into the database tables.
+
+```
+$ python3 etl.py
+71 files found in data/song_data
+1/71 files processed.
+2/71 files processed.
+3/71 files processed.
+4/71 files processed.
+5/71 files processed.
+...
+67/71 files processed.
+68/71 files processed.
+69/71 files processed.
+70/71 files processed.
+71/71 files processed.
+30 files found in data/log_data
+1/30 files processed.
+2/30 files processed.
+3/30 files processed.
+4/30 files processed.
+5/30 files processed.
+...
+26/30 files processed.
+27/30 files processed.
+28/30 files processed.
+29/30 files processed.
+30/30 files processed.
+```
+
+## Author(s)
+
+* **Roy Telles, Jr.** *(with the help of the Udacity team)*
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+
+## Acknowledgments
+
+* I would like to acknowledge and give big thanks to Udacity and team for this excellent resume-building experience
