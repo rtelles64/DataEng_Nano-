@@ -127,7 +127,7 @@ Using the song and log datasets, this star schema is optimized for queries on so
 ## Project Files
 
 - `create_tables.py` - drops and creates tables.
-> Run this file to reset tables before running etl scripts
+    > Run this file to reset tables before running etl scripts
 
 - `etl.py` - reads and processes files from `song_data` and `log_data` and loads them into the tables
 
