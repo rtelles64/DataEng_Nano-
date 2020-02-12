@@ -84,6 +84,11 @@ def process_log_file(cur, filepath):
         results = cur.execute(song_select, (row.song, row.artist, row.length))
         songid, artistid = results if results else None, None
 
+        rows = cur.fetchone()
+
+        if rows:
+            print(f'Valid data: {rows}')
+
         # insert songplay record
         songplay_data = (row.ts, row.userId, row.level, songid, artistid,
                          row.sessionId, row.location, row.userAgent)
